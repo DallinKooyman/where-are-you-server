@@ -1,12 +1,16 @@
 import express from 'express';
 import { createServer } from 'http';
 import { initializeKafka } from './config/kafka.js';
+import { initializeMongoDB } from './config/mongodb.js';
 
 const PORT = process.env.port || 1313;
 const app = express();
 const httpServer = createServer(app);
 
 app.use(express.json());
+
+// Connect to Mongo
+initializeMongoDB();
 
 // Start Kafka
 initializeKafka();
