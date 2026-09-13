@@ -1,19 +1,13 @@
-import mongoose, { InferSchemaType } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose, { Schema } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    default: uuidv4, //Auto create for new Users
-  },
+  _id: { type: Schema.Types.ObjectId, auto: true },
   name: String,
 });
 
 export const UserModel = mongoose.model('User', userSchema);
 
-type UserSchemaShape = InferSchemaType<typeof userSchema>;
-export type UserDoc = Omit<UserSchemaShape, '_id'> & {
-  _id: string;
+export interface UserSchemaShape {
+  _id: string; // MongoDB ObjectId
   name: string;
-  __v: number;
-};
+}
