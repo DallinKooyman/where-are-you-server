@@ -26,6 +26,6 @@ export const userRepository = {
   },
 };
 
-function toUser(doc: UserSchemaShape): User {
+export function toUser(doc: UserSchemaShape): User {
   return { id: doc._id.toString(), name: doc.name };
 }
