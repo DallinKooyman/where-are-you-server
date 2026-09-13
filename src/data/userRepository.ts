@@ -14,6 +14,10 @@ export const userRepository = {
     const doc = await UserModel.findOne({ name }).lean<UserDoc>();
     return doc ? toUser(doc) : null;
   },
+  async getAllUsers(): Promise<User[]> {
+    const docs = await UserModel.find().lean<UserDoc[]>();
+    return docs.map((doc: UserDoc) => toUser(doc));
+  },
 };
 
 function toUser(doc: UserDoc): User {

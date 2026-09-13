@@ -24,4 +24,7 @@ export const userService = {
 
     return await userRepository.findByName(data.name);
   },
+  async getAllUsers(): Promise<User[]> {
+    return await userRepository.getAllUsers();
+  },
 };

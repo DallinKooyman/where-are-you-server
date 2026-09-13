@@ -1,5 +1,7 @@
 node_modules/*
-
+.vs_code/*
 dist/*
 
 tsconfig.tsbuildinfo
+
+TODO
