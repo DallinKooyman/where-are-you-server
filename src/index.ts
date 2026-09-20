@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { initializeKafka } from './config/kafka.js';
 import { initializeMongoDB } from './config/mongodb.js';
 import userRoutes from './routes/userRoutes.js';
+import friendshipRoutes from './routes/friendshipRoutes.js';
 
 const PORT = process.env.port || 1313;
 const app = express();
@@ -25,6 +26,7 @@ app.get(['/ping', '/health'], (req, res) => {
 });
 
 app.use('/users', userRoutes);
+app.use('/friendships', friendshipRoutes);
 
 httpServer.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
