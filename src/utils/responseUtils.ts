@@ -1,3 +1,13 @@
+export const missingRequiredUserName: object = {
+  message: 'Missing required field',
+  required: {
+    name: {
+      type: 'string',
+      description: 'The name of the user',
+    },
+  },
+};
+
 export const missingRequiredFriendshipUserIds: object = {
   message: 'Missing required fields',
   required: {

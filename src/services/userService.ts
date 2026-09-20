@@ -14,10 +14,8 @@ export const userService = {
 
     return await userRepository.create(data);
   },
-  async getUserById(data: User): Promise<User | null> {
-    if (!data.id) throw new Error('ID required for this search');
-
-    return await userRepository.findById(data.id);
+  async getUserById(id: string): Promise<User | null> {
+    return await userRepository.findById(id);
   },
   async getUserByName(data: User): Promise<User | null> {
     if (!data.name) throw new Error('Name required for this search');
@@ -26,5 +24,13 @@ export const userService = {
   },
   async getAllUsers(): Promise<User[]> {
     return await userRepository.getAllUsers();
+  },
+  async updateUser(id: string, name: string): Promise<User | null> {
+    const user = await userRepository.findById(id);
+    if (!user) return null;
+    return await userRepository.updateUser(id, name);
+  },
+  async deleteUser(id: string): Promise<void> {
+    await userRepository.deleteUser(id);
   },
 };

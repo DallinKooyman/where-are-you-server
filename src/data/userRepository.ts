@@ -13,19 +13,26 @@ export const userRepository = {
     return user;
   },
   async findById(id: string): Promise<User | null> {
-    const doc = await UserModel.findById(id).lean<UserSchemaShape>();
-    return doc ? toUser(doc) : null;
+    const user = await UserModel.findById(id).lean<UserSchemaShape>();
+    return user ? toUser(user) : null;
   },
   async findByName(name: string): Promise<User | null> {
-    const doc = await UserModel.findOne({ name }).lean<UserSchemaShape>();
-    return doc ? toUser(doc) : null;
+    const user = await UserModel.findOne({ name }).lean<UserSchemaShape>();
+    return user ? toUser(user) : null;
   },
   async getAllUsers(): Promise<User[]> {
-    const docs = await UserModel.find().lean<UserSchemaShape[]>();
-    return docs.map((doc: UserSchemaShape) => toUser(doc));
+    const users = await UserModel.find().lean<UserSchemaShape[]>();
+    return users.map((user: UserSchemaShape) => toUser(user));
+  },
+  async updateUser(id: string, name: string): Promise<User | null> {
+    const user = await UserModel.findByIdAndUpdate(id, { name }).lean<UserSchemaShape>();
+    return user ? toUser(user) : null;
+  },
+  async deleteUser(id: string): Promise<void> {
+    await UserModel.findByIdAndDelete(id);
   },
 };
 
-export function toUser(doc: UserSchemaShape): User {
-  return { id: doc._id.toString(), name: doc.name };
+export function toUser(user: UserSchemaShape): User {
+  return { id: user._id.toString(), name: user.name };
 }
