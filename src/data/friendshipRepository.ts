@@ -1,23 +1,33 @@
+import mongoose from 'mongoose';
 import { FriendshipModel, FriendshipPopulated } from '../models/friendship.js';
 import { CreateFriendshipInput, Friendship } from '../types/friendship.js';
+import { Status } from '../types/friendshipStatus.js';
 import { toUser } from './userRepository.js';
 
 export const friendshipRepository = {
-  async create(data: CreateFriendshipInput): Promise<Friendship> {
-    const doc = await FriendshipModel.create({
-      user: data.userId,
-      friend: data.friendId,
-    });
+  async create(data: CreateFriendshipInput[]): Promise<Friendship> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    const friendship = await this.findById(doc._id!.toString());
-    if (!friendship) {
-      throw new Error(
-        `Failed to retrieve newly created friendship with id: ${doc._id?.toString}\n` +
-          `with user: ${data.userId}\n` +
-          `and friend: ${data.friendId}`
-      );
+    try {
+      const [friendship1] = await FriendshipModel.create(data, { session });
+      await session.commitTransaction();
+
+      const friendship = await this.findById(friendship1._id!.toString());
+      if (!friendship) {
+        throw new Error(
+          `Failed to retrieve newly created friendship with id: ${friendship1._id?.toString}\n` +
+            `with user: ${data[0].user}\n` +
+            `and friend: ${data[0].friend}`
+        );
+      }
+      return friendship;
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
     }
-    return friendship;
   },
   async findById(id: string): Promise<Friendship | null> {
     const doc = await FriendshipModel.findById(id)
@@ -40,9 +50,60 @@ export const friendshipRepository = {
       .lean<FriendshipPopulated>();
     return doc ? toFriendship(doc) : null;
   },
-  async findByUserAndStatus(userId: string, status: string): Promise<Friendship[] | undefined> {
+  async findByUserAndStatus(userId: string, status: Status): Promise<Friendship[] | undefined> {
     const friendships = await this.findByUser(userId);
     return friendships?.filter((friendship) => status === friendship.status);
+  },
+  async getAllFriendships() {
+    const friendships = await FriendshipModel.find().lean<FriendshipPopulated[]>();
+    return friendships.map((friendship: FriendshipPopulated) => toFriendship(friendship));
+  },
+  async updateFriendshipStatus(user: string, friend: string, status: Status): Promise<void> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      await FriendshipModel.updateMany(
+        {
+          $or: [
+            { user: user, friend: friend },
+            { user: friend, friend: user },
+          ],
+        },
+        { status },
+        { session }
+      );
+
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
+  },
+  async deleteFriendship(user: string, friend: string): Promise<void> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      await FriendshipModel.deleteMany(
+        {
+          $or: [
+            { user: user, friend: friend },
+            { user: friend, friend: user },
+          ],
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
   },
 };
 
@@ -51,7 +112,8 @@ function toFriendship(doc: FriendshipPopulated): Friendship {
     id: doc._id!.toString(),
     user: toUser(doc.user),
     friend: toUser(doc.friend),
-    status: doc.status,
+    requesterId: doc.requesterId,
+    status: doc.status as Status,
     createdAt: doc.createdAt,
   };
 }

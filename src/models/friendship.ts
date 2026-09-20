@@ -1,11 +1,13 @@
 import mongoose, { InferSchemaType, Schema } from 'mongoose';
 import { UserSchemaShape } from './user.js';
+import { Status } from '../types/friendshipStatus.js';
 
 const friendshipSchema = new mongoose.Schema({
   _id: { type: Schema.Types.ObjectId, auto: true },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   friend: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-  status: { type: String, enum: ['pending', 'active', 'blocked'], default: 'pending' },
+  requesterId: { type: String, required: true },
+  status: { type: Status, default: Status.Pending },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -17,6 +19,7 @@ export interface FriendshipPopulated {
   _id: string;
   user: UserSchemaShape;
   friend: UserSchemaShape;
-  status: 'pending' | 'active' | 'blocked';
+  requesterId: string;
+  status: Status;
   createdAt: Date;
 }
