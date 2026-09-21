@@ -1,14 +1,13 @@
 import { producer } from '../../config/kafka.js';
-import { LocationChangeInput } from '../../types/location.js';
 
-export const publishLocationUpdate = async (message: LocationChangeInput) => {
+export async function sendMessage(topic: string, key: string, value: string) {
   await producer.send({
-    topic: 'location-update',
+    topic: topic,
     messages: [
       {
-        key: message.user,
-        value: JSON.stringify(message),
+        key: key,
+        value: value,
       },
     ],
   });
-};
+}

@@ -5,7 +5,7 @@ import { toUser } from './userRepository.js';
 
 export const LocationRespository = {
   async create(data: LocationChangeInput): Promise<void> {
-    LocationModel.create(data);
+    await LocationModel.create(data);
   },
   async findByUser(user: User): Promise<Location[]> {
     const locations = await LocationModel.find({ user: user.id })

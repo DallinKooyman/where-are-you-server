@@ -1,6 +1,6 @@
 import { Kafka } from 'kafkajs';
 
-const kafka = new Kafka({
+export const kafka = new Kafka({
   clientId: 'where-are-you-server',
   brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
 });
@@ -9,9 +9,6 @@ export const producer = kafka.producer();
 
 export const initializeKafka = async () => {
   try {
-    await producer.connect();
-    console.debug('Producer Online');
-
     const admin = kafka.admin();
     await admin.connect();
 
@@ -20,7 +17,7 @@ export const initializeKafka = async () => {
     await admin.createTopics({
       topics: [
         {
-          topic: 'location-update',
+          topic: 'location-updates',
         },
       ],
     });
