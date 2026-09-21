@@ -3,7 +3,7 @@ import { LocationChangeInput, Location } from '../types/location.js';
 import { User } from '../types/user.js';
 import { toUser } from './userRepository.js';
 
-export const timelineRespository = {
+export const LocationRespository = {
   async create(data: LocationChangeInput): Promise<void> {
     LocationModel.create(data);
   },

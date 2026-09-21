@@ -31,3 +31,27 @@ export const missingRequiredFriendshipUpdateInputs: object = {
     },
   },
 };
+
+export const missingRequiredLocationChangeInputs: object = {
+  message: 'Missing Required fields',
+  required: {
+    userId: {
+      type: 'string',
+      decsriptions: 'The id of the user that had the location change',
+    },
+    position: {
+      latitude: {
+        type: 'number',
+        description: 'The latitude the user is now at',
+      },
+      longitude: {
+        type: 'number',
+        description: 'The longitude the user is now at',
+      },
+    },
+    time: {
+      type: 'string',
+      description: 'The time of location change. Format: YYYY-MM-ddThh:mm V',
+    },
+  },
+};

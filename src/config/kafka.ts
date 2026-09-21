@@ -20,7 +20,7 @@ export const initializeKafka = async () => {
     await admin.createTopics({
       topics: [
         {
-          topic: 'First',
+          topic: 'location-update',
         },
       ],
     });
