@@ -5,10 +5,8 @@ import { initializeMongoDB } from './config/mongodb.js';
 import eventRoutes from './routes/eventRoutes.js';
 import friendshipRoutes from './routes/friendshipRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import {
-  startLocationSaver,
-  stopLocationSaver,
-} from './services/kafka/kafkaConsumer.ts/locationSaver.js';
+import { startLocationSaver, stopLocationSaver } from './services/locationService.js';
+import { initializeRedis, redisClient, redisSubscriber } from './config/redis.js';
 
 const PORT = process.env.port || 1313;
 const app = express();
@@ -37,6 +35,7 @@ app.use('/events', eventRoutes);
 httpServer.listen(PORT, async () => {
   await producer.connect();
   await startLocationSaver();
+  await initializeRedis();
   console.log(`Backend running on port ${PORT}`);
   console.log(`WebSocket server listening on ws://localhost:${PORT}`);
 });
@@ -45,6 +44,8 @@ process.on('SIGTERM', async () => {
   console.log('Shutting down gracefully...');
   await producer.disconnect();
   await stopLocationSaver();
+  await redisClient.destroy();
+  await redisSubscriber.destroy();
   process.exit(0);
 });
 
@@ -52,5 +53,7 @@ process.on('SIGINT', async () => {
   console.log('Shutting down gracefully...');
   await producer.disconnect();
   await stopLocationSaver();
+  await redisClient.destroy();
+  await redisSubscriber.destroy();
   process.exit(0);
 });

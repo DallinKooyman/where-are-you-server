@@ -4,8 +4,16 @@ import { User } from '../types/user.js';
 import { toUser } from './userRepository.js';
 
 export const LocationRespository = {
-  async create(data: LocationChangeInput): Promise<void> {
-    await LocationModel.create(data);
+  async create(data: LocationChangeInput): Promise<Location | null> {
+    const doc = await LocationModel.create(data);
+    return await this.findById(doc.id);
+  },
+  async findById(id: string): Promise<Location | null> {
+    const location = await LocationModel.findById(id)
+      .populate('user')
+      .populate('position')
+      .lean<LocationPopulated>();
+    return location ? toLocation(location) : null;
   },
   async findByUser(user: User): Promise<Location[]> {
     const locations = await LocationModel.find({ user: user.id })
