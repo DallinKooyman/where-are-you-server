@@ -3,7 +3,7 @@ import { Location, LocationChangeInput } from '../types/location.js';
 import { LocationRespository } from '../data/locationRepository.js';
 import { redisClient, redisSubscriber } from '../config/redis.js';
 import { friendshipRepository } from '../data/friendshipRepository.js';
-import { User } from '../types/user.js';
+import { userConnections } from '../config/websocket.js';
 
 const consumer = kafka.consumer({ groupId: 'location-updates-group' });
 
@@ -52,11 +52,21 @@ async function publishLocationUpdate(location: Location) {
   }
 }
 
-async function subscribeToLocationUpdates(user: User) {
-  const channel = `user:${user.id}:friendLocationChange`;
+export const setupLocationUpdatesSubscription = () => {
+  redisSubscriber.pSubscribe(`user:*:friendLocationChange`, (message: string, channel: string) => {
+    const userId = channel.match(/user:(\w+):friendLocationChange/)?.[1];
 
-  await redisSubscriber.subscribe(channel, (message: string) => {
+    if (!userId) return;
+
+    const userSockets = userConnections.get(userId);
+
+    if (userSockets) {
+      userSockets.forEach((socket) => {
+        socket.emit('locationUpdate', { location: JSON.stringify(message) });
+      });
+    }
+
     const locationUpdate: Location = JSON.parse(message);
     console.debug(`Channel '${channel}' recieved a message: ${locationUpdate}`);
   });
-}
+};

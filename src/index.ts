@@ -7,6 +7,7 @@ import friendshipRoutes from './routes/friendshipRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { startLocationSaver, stopLocationSaver } from './services/locationService.js';
 import { initializeRedis, redisClient, redisSubscriber } from './config/redis.js';
+import { initializeWebSocket, stopWebSocket } from './config/websocket.js';
 
 const PORT = process.env.port || 1313;
 const app = express();
@@ -36,6 +37,7 @@ httpServer.listen(PORT, async () => {
   await producer.connect();
   await startLocationSaver();
   await initializeRedis();
+  await initializeWebSocket(httpServer);
   console.log(`Backend running on port ${PORT}`);
   console.log(`WebSocket server listening on ws://localhost:${PORT}`);
 });
@@ -46,6 +48,7 @@ process.on('SIGTERM', async () => {
   await stopLocationSaver();
   await redisClient.destroy();
   await redisSubscriber.destroy();
+  stopWebSocket(httpServer);
   process.exit(0);
 });
 
@@ -55,5 +58,6 @@ process.on('SIGINT', async () => {
   await stopLocationSaver();
   await redisClient.destroy();
   await redisSubscriber.destroy();
+  stopWebSocket(httpServer);
   process.exit(0);
 });
