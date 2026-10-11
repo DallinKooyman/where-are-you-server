@@ -1,17 +1,19 @@
 import express from 'express';
 import { friendshipService } from '../services/friendshipService.js';
-import { CreateFriendshipInput } from '../types/friendship.js';
+import { CreateFriendshipInput, Friendship } from '../types/friendship.js';
 import {
   missingRequiredFriendshipUpdateInputs,
   missingRequiredFriendshipUserIds,
 } from '../utils/responseUtils.js';
 import { Status } from '../types/friendshipStatus.js';
+import { FriendshipFilterType } from '../types/filterTypes.js';
 
 const friendshipRoutes = express.Router();
 
 friendshipRoutes.get('/', async (req, res) => {
   try {
-    const friendships = await friendshipService.getFriendships();
+    const filter = FriendshipFilterType.buildFriendshipFilter(req.query);
+    const friendships: Friendship[] = await friendshipService.getFriendshipsWithFilter(filter);
     res.status(200).json({ message: `Friendships`, friendships });
   } catch (err) {
     res.status(500).json({ error: `There was an error getting friendships: ${err}` });
@@ -39,10 +41,10 @@ friendshipRoutes.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const friendship = await friendshipService.getFriendshipById(id);
-    if (!friendship) {
-      res.status(404).json({ message: `No friendship with the id: ${id}` });
+    if (friendship) {
+      res.status(200).json({ message: `Retreived the friendship successfully`, friendship });
     }
-    res.status(200).json({ message: `Retreived the friendship successfully`, friendship });
+    res.status(404).json({ message: `No friendship with the id: ${id}` });
   } catch (err) {
     res.status(500).json({ error: `There was an error getting the friendship: ${err}` });
   }

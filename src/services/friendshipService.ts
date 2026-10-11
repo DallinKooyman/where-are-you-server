@@ -1,4 +1,5 @@
 import { friendshipRepository } from '../data/friendshipRepository.js';
+import { FriendshipFilterType } from '../types/filterTypes.js';
 import { CreateFriendshipInput, Friendship } from '../types/friendship.js';
 import { Status } from '../types/friendshipStatus.js';
 
@@ -14,8 +15,17 @@ export const friendshipService = {
     } as CreateFriendshipInput;
     return await friendshipRepository.create([data, reverseFrienshipInput]);
   },
+  async getFriendshipsWithFilter(filter: FriendshipFilterType): Promise<Friendship[]> {
+    return await friendshipRepository.findByFilter({ filter });
+  },
   async getFriendshipById(id: string): Promise<Friendship | null> {
     return await friendshipRepository.findById(id);
+  },
+  async getFriendshipsByUser(userId: string): Promise<Friendship[]> {
+    return await friendshipRepository.findByUser(userId);
+  },
+  async getFriendshipByUserAndFriend(userId: string, friendId: string): Promise<Friendship | null> {
+    return await friendshipRepository.findByUserAndFriend(userId, friendId);
   },
   async updateFriendship(id: string, status: Status): Promise<Friendship | null> {
     const friendship = await friendshipRepository.findById(id);

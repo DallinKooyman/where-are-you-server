@@ -1,5 +1,10 @@
+import { QueryFilter } from 'mongoose';
 import mongoose from 'mongoose';
-import { FriendshipModel, FriendshipPopulated } from '../models/friendship.js';
+import {
+  FriendshipModel,
+  FriendshipPopulated,
+  FriendshipSchemaShape,
+} from '../models/friendship.js';
 import { CreateFriendshipInput, Friendship } from '../types/friendship.js';
 import { Status } from '../types/friendshipStatus.js';
 import { toUser } from './userRepository.js';
@@ -29,6 +34,13 @@ export const friendshipRepository = {
       await session.endSession();
     }
   },
+  async findByFilter(filter: QueryFilter<FriendshipSchemaShape>): Promise<Friendship[]> {
+    const docs = await FriendshipModel.find(filter)
+      .populate('user')
+      .populate('friend')
+      .lean<FriendshipPopulated[]>();
+    return docs.map((doc: FriendshipPopulated) => toFriendship(doc));
+  },
   async findById(id: string): Promise<Friendship | null> {
     const doc = await FriendshipModel.findById(id)
       .populate('user')
@@ -36,7 +48,7 @@ export const friendshipRepository = {
       .lean<FriendshipPopulated>();
     return doc ? toFriendship(doc) : null;
   },
-  async findByUser(userId: string): Promise<Friendship[] | null> {
+  async findByUser(userId: string): Promise<Friendship[]> {
     const docs = await FriendshipModel.find({ user: userId })
       .populate('user')
       .populate('friend')
