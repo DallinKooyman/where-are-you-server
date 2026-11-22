@@ -7,6 +7,19 @@ export const missingRequiredUserName: object = {
     },
   },
 };
+export const missingLoginInputs: object = {
+  message: 'Missing required field',
+  required: {
+    name: {
+      type: 'string',
+      description: 'The name of the user',
+    },
+    password: {
+      type: 'string',
+      description: 'The password of the user',
+    },
+  },
+};
 
 export const missingRequiredFriendshipUserIds: object = {
   message: 'Missing required fields',

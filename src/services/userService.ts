@@ -1,5 +1,6 @@
 import { CreateUserInput, User } from '../types/user.js';
 import { userRepository } from '../data/userRepository.js';
+import argon2 from 'argon2';
 
 /**
  * Used to acces the User Repo
@@ -7,8 +8,6 @@ import { userRepository } from '../data/userRepository.js';
  */
 export const userService = {
   async registerNewUser(data: CreateUserInput): Promise<User> {
-    if (!data.name) throw new Error('Name required');
-
     const user = await userRepository.findByName(data.name);
     if (user) throw new Error('User exists');
 
@@ -32,5 +31,16 @@ export const userService = {
   },
   async deleteUser(id: string): Promise<void> {
     await userRepository.deleteUser(id);
+  },
+  async login(name: string, password: string): Promise<User | string> {
+    const user = await userRepository.findByNameWithPassword(name);
+    if (!user) return 'Name did not match any user';
+    // The hashed password must be first
+    const isPasswordCorrect = await argon2.verify(user.password!, password);
+    if (isPasswordCorrect) {
+      return user;
+    } else {
+      return 'Passowrd is incorrect'; //TODO Update in the future to be a true error message (like a status code)
+    }
   },
 };

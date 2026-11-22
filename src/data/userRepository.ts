@@ -20,6 +20,10 @@ export const userRepository = {
     const user = await UserModel.findOne({ name }).lean<UserSchemaShape>();
     return user ? toUser(user) : null;
   },
+  async findByNameWithPassword(name: string): Promise<User | null> {
+    const user = await UserModel.findOne({ name }).select('+password').lean<UserSchemaShape>();
+    return user ? toUser(user) : null;
+  },
   async getAllUsers(): Promise<User[]> {
     const users = await UserModel.find().lean<UserSchemaShape[]>();
     return users.map((user: UserSchemaShape) => toUser(user));
