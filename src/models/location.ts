@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 import mongoose, { InferSchemaType, Schema } from 'mongoose';
 import { Position } from '../types/position.js';
 import { UserSchemaShape } from './user.js';

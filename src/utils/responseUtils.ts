@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 export const missingRequiredUserName: object = {
   message: 'Missing required field',
   required: {

@@ -1,0 +1,7 @@
+Make Location Retrival APIs (all for a user, all on a day)
+Add a spot for last known location. Then make a way to send it in a websocket to all friends (if user is just turning on the app check the DB, if user is online they get from the websocket)
+Test
+
+look into caching information in redis for easy look up (friendships)
+
+Handle no filter in get friendships call

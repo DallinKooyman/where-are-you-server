@@ -638,8 +638,8 @@ file to most effectively state the exclusion of warranty; and each file should
 have at least the "copyright" line and a pointer to where the full notice is
 found.
 
-Where are you?
-A self hosted service to share your location with friends
+Where are you? Server
+A self hosted service to share your location 
 
 Copyright (C) 2026 Dallin Kooyman
 
@@ -663,7 +663,7 @@ electronic and paper mail.
 If the program does terminal interaction, make it
 output a short notice like this when it starts in an interactive mode:
 
-Where are you?
+Where are you? Server
 Copyright (C) 2026 Dallin Kooyman
 
 This program comes with ABSOLUTELY NO

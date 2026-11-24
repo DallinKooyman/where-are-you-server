@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 import express from 'express';
 import { friendshipService } from '../services/friendshipService.js';
 import { CreateFriendshipInput, Friendship } from '../types/friendship.js';
@@ -13,6 +17,7 @@ const friendshipRoutes = express.Router();
 friendshipRoutes.get('/', async (req, res) => {
   try {
     const filter = FriendshipFilterType.buildFriendshipFilter(req.query);
+    //TODO: confirm there is something in the filter or default to the requesting user's friendships
     const friendships: Friendship[] = await friendshipService.getFriendshipsWithFilter(filter);
     res.status(200).json({ message: `Friendships`, friendships });
   } catch (err) {

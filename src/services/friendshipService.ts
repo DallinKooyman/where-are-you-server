@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 import { friendshipRepository } from '../data/friendshipRepository.js';
 import { FriendshipFilterType } from '../types/filterTypes.js';
 import { CreateFriendshipInput, Friendship } from '../types/friendship.js';

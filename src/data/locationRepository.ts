@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 import { LocationModel, LocationPopulated } from '../models/location.js';
 import { LocationChangeInput, Location } from '../types/location.js';
 import { User } from '../types/user.js';

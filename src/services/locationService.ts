@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Dallin Kooyman
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE in the project root for license information.
+
 import { kafka } from '../config/kafka.js';
 import { Location, LocationChangeInput } from '../types/location.js';
 import { LocationRespository } from '../data/locationRepository.js';
