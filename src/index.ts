@@ -3,7 +3,7 @@
 // See LICENSE in the project root for license information.
 
 import express from 'express';
-import { createServer } from 'http';
+import { createServer } from 'https';
 import { initializeKafka, producer } from './config/kafka.js';
 import { initializeMongoDB } from './config/mongodb.js';
 import eventRoutes from './routes/eventRoutes.js';
@@ -15,7 +15,7 @@ import { initializeWebSocket, stopWebSocket } from './config/websocket.js';
 
 const PORT = process.env.port || 1313;
 const app = express();
-const httpServer = createServer(app);
+const httpsServer = createServer(app);
 
 app.use(express.json());
 
@@ -37,11 +37,11 @@ app.use('/users', userRoutes);
 app.use('/friendships', friendshipRoutes);
 app.use('/events', eventRoutes);
 
-httpServer.listen(PORT, async () => {
+httpsServer.listen(PORT, async () => {
   await producer.connect();
   await startLocationSaver();
   await initializeRedis();
-  await initializeWebSocket(httpServer);
+  await initializeWebSocket(httpsServer);
   console.log(`Backend running on port ${PORT}`);
   console.log(`WebSocket server listening on ws://localhost:${PORT}`);
 });
@@ -52,7 +52,7 @@ process.on('SIGTERM', async () => {
   await stopLocationSaver();
   await redisClient.destroy();
   await redisSubscriber.destroy();
-  stopWebSocket(httpServer);
+  stopWebSocket(httpsServer);
   process.exit(0);
 });
 
@@ -62,6 +62,6 @@ process.on('SIGINT', async () => {
   await stopLocationSaver();
   await redisClient.destroy();
   await redisSubscriber.destroy();
-  stopWebSocket(httpServer);
+  stopWebSocket(httpsServer);
   process.exit(0);
 });
