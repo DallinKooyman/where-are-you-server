@@ -14,7 +14,7 @@ const locationSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const LocationModel = mongoose.model('Locaiton', locationSchema);
+export const LocationModel = mongoose.model('Location', locationSchema);
 
 export type LocationSchemaShape = InferSchemaType<typeof locationSchema>;
 
