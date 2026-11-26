@@ -4,7 +4,7 @@
 
 import express from 'express';
 import { userService } from '../services/userService.js';
-import { missingLoginInputs, missingRequiredUserName } from '../utils/responseUtils.js';
+import { missingRequiredUserName } from '../utils/responseUtils.js';
 import argon2 from 'argon2';
 
 const userRoutes = express.Router();
@@ -19,11 +19,11 @@ userRoutes.get('/', async (req, res) => {
 });
 
 userRoutes.post('/', async (req, res) => {
-  if (!req.body || !req.body.name || !req.body.password) {
-    return res.status(400).json(missingLoginInputs);
+  if (!req.body || !req.body.name) {
+    return res.status(400).json(missingRequiredUserName);
   }
   const name = req.body.name;
-  const password = await argon2.hash(req.body.password);
+  const password = req.body.password ? await argon2.hash(req.body.password) : undefined;
   try {
     const user = await userService.registerNewUser({ name, password });
     res.status(200).json({ message: `User was created successfully`, user });
@@ -74,10 +74,10 @@ userRoutes.delete(':id', async (req, res) => {
 
 userRoutes.post('/login', async (req, res) => {
   if (!req.body || !req.body.name || !req.body.password) {
-    return res.status(400).json(missingLoginInputs);
+    return res.status(400).json(missingRequiredUserName);
   }
   const name = req.body.name;
-  const password = req.body.password;
+  const password = req.body.password ? await argon2.hash(req.body.password) : undefined;
   try {
     const user = await userService.login(name, password);
     if (typeof user === 'string') {

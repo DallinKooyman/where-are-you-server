@@ -36,11 +36,22 @@ export const userService = {
   async deleteUser(id: string): Promise<void> {
     await userRepository.deleteUser(id);
   },
-  async login(name: string, password: string): Promise<User | string> {
+  async login(name: string, password?: string): Promise<User | string> {
     const user = await userRepository.findByNameWithPassword(name);
     if (!user) return 'Name did not match any user';
-    // The hashed password must be first
-    const isPasswordCorrect = await argon2.verify(user.password!, password);
+
+    // If no user.password and no password then log the user in
+    let isPasswordCorrect = true;
+
+    // If the user had a stored password, we must check for it.
+    if (user.password) {
+      // The hashed password must be first
+      isPasswordCorrect = password ? await argon2.verify(user.password, password) : false;
+    }
+    // If a password was passed in, then check against stored password. If there is no stored password the don't log in
+    else if (password) {
+      isPasswordCorrect = user.password ? await argon2.verify(user.password, password) : false;
+    }
     if (isPasswordCorrect) {
       return user;
     } else {

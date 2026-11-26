@@ -7,7 +7,7 @@ import mongoose, { Schema } from 'mongoose';
 const userSchema = new mongoose.Schema({
   _id: { type: Schema.Types.ObjectId, auto: true },
   name: String,
-  password: { type: String, required: true, select: false }, //select is false to exclude it by default with find calls
+  password: { type: String, required: false, select: false }, //select is false to exclude it by default with find calls
 });
 
 export const UserModel = mongoose.model('User', userSchema);

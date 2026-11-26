@@ -10,5 +10,5 @@ export interface User {
 
 export interface CreateUserInput {
   name: string;
-  password: string;
+  password?: string;
 }
